@@ -336,6 +336,23 @@
                 }
 
                 return options;
+            },
+            
+            /**
+             * 对文件名进行编码，处理特殊字符
+             * @param {string} fileName - 文件名
+             * @returns {string} 编码后的文件名
+             */
+            encodeFileName: function (fileName) {
+                if (!fileName) {
+                    return fileName;
+                }
+                
+                // 替换常见特殊字符为下划线
+                var encoded = fileName.replace(/[\/:*?"<>|]/g, '_');
+                
+                // 对结果进行URL编码，确保兼容性
+                return encodeURIComponent(encoded);
             }
         };
     }]);

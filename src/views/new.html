@@ -60,6 +60,13 @@
                                     <input type="text" class="form-control" placeholder="Leave blank to use default path" ng-model="context.downloadPath" />
                                 </div>
                             </div>
+                            <!-- 下载时重命名 -->
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <p translate>File Name (Optional)</p>
+                                    <input type="text" class="form-control" placeholder="Leave blank to use original file name" ng-model="context.fileName" />
+                                </div>
+                            </div>
                         </div>
                     <div class="new-task-table" ng-if="context.taskType === 'torrent' || context.taskType === 'metalink'">
                         <div class="row">

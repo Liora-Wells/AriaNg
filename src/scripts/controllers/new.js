@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    angular.module('ariaNg').controller('NewTaskController', ['$rootScope', '$scope', '$location', '$timeout', 'ariaNgCommonService', 'ariaNgLogService', 'ariaNgKeyboardService', 'ariaNgFileService', 'ariaNgSettingService', 'aria2TaskService', 'aria2SettingService', function ($rootScope, $scope, $location, $timeout, ariaNgCommonService, ariaNgLogService, ariaNgKeyboardService, ariaNgFileService, ariaNgSettingService, aria2TaskService, aria2SettingService) {
+    angular.module('ariaNg').controller('NewTaskController', ['$rootScope', '$scope', '$location', '$timeout', '$window', 'ariaNgCommonService', 'ariaNgLogService', 'ariaNgKeyboardService', 'ariaNgFileService', 'ariaNgSettingService', 'aria2TaskService', 'aria2SettingService', function ($rootScope, $scope, $location, $timeout, $window, ariaNgCommonService, ariaNgLogService, ariaNgKeyboardService, ariaNgFileService, ariaNgSettingService, aria2TaskService, aria2SettingService) {
         var tabStatusItems = [
             {
                 name: 'links',
@@ -68,9 +68,22 @@
         var downloadByLinks = function (pauseOnAdded, responseCallback) {
             var options = angular.copy($scope.context.options);
             
-            // 应用临时下载路径
+            // 应用临时下载路径，基于全局配置的dir
             if ($scope.context.downloadPath) {
-                options.dir = $scope.context.downloadPath;
+                if ($scope.context.baseDownloadDir) {
+                    // 使用适合当前操作系统的路径分隔符
+                    var pathSeparator = $window.navigator.userAgent.indexOf('Windows') !== -1 ? '\\\\' : '/';
+                    // 确保路径分隔符正确拼接
+                    options.dir = $scope.context.baseDownloadDir.replace(/[\/\\]$/, '') + pathSeparator + $scope.context.downloadPath.replace(/^[\/\\]/, '');
+                } else {
+                    // 否则直接使用提供的路径
+                    options.dir = $scope.context.downloadPath;
+                }
+            }
+
+            // 应用文件重命名并处理特殊字符
+            if ($scope.context.fileName) {
+                options.out = ariaNgCommonService.encodeFileName($scope.context.fileName);
             }
             
             var tasks = getDownloadTasksByLinks(options);
@@ -83,6 +96,24 @@
         var downloadByTorrent = function (pauseOnAdded, responseCallback) {
             var options = angular.copy($scope.context.options);
 
+            // 应用临时下载路径，基于全局配置的dir
+            if ($scope.context.downloadPath) {
+                if ($scope.context.baseDownloadDir) {
+                    // 使用适合当前操作系统的路径分隔符
+                    var pathSeparator = $window.navigator.userAgent.indexOf('Windows') !== -1 ? '\\\\' : '/';
+                    // 确保路径分隔符正确拼接
+                    options.dir = $scope.context.baseDownloadDir.replace(/[\/\\]$/, '') + pathSeparator + $scope.context.downloadPath.replace(/^[\/\\]/, '');
+                } else {
+                    // 否则直接使用提供的路径
+                    options.dir = $scope.context.downloadPath;
+                }
+            }
+
+            // 应用文件重命名并处理特殊字符
+            if ($scope.context.fileName) {
+                options.out = ariaNgCommonService.encodeFileName($scope.context.fileName);
+            }
+
             var task = {
                 content: $scope.context.uploadFile.base64Content,
                 options: options
@@ -94,9 +125,29 @@
         };
 
         var downloadByMetalink = function (pauseOnAdded, responseCallback) {
+            var options = angular.copy($scope.context.options);
+
+            // 应用临时下载路径，基于全局配置的dir
+            if ($scope.context.downloadPath) {
+                if ($scope.context.baseDownloadDir) {
+                    // 使用适合当前操作系统的路径分隔符
+                    var pathSeparator = $window.navigator.userAgent.indexOf('Windows') !== -1 ? '\\\\' : '/';
+                    // 确保路径分隔符正确拼接
+                    options.dir = $scope.context.baseDownloadDir.replace(/[\/\\]$/, '') + pathSeparator + $scope.context.downloadPath.replace(/^[\/\\]/, '');
+                } else {
+                    // 否则直接使用提供的路径
+                    options.dir = $scope.context.downloadPath;
+                }
+            }
+
+            // 应用文件重命名并处理特殊字符
+            if ($scope.context.fileName) {
+                options.out = ariaNgCommonService.encodeFileName($scope.context.fileName);
+            }
+
             var task = {
                 content: $scope.context.uploadFile.base64Content,
-                options: angular.copy($scope.context.options)
+                options: options
             };
 
             saveDownloadPath(task.options);
@@ -109,6 +160,7 @@
             taskType: 'urls',
             urls: '',
             downloadPath: '',
+            fileName: '',
             uploadFile: null,
             availableOptions: (function () {
                 var keys = aria2SettingService.getNewTaskOptionKeys();
@@ -124,8 +176,20 @@
                 http: false,
                 bittorrent: false
             },
-            exportCommandApiOptions: null
+            exportCommandApiOptions: null,
+            // 基础下载目录，来自aria2全局配置
+            baseDownloadDir: ''
         };
+
+        // 获取全局下载路径
+        $rootScope.loadPromise = aria2SettingService.getGlobalOption(function (response) {
+            if (response.success) {
+                $scope.context.globalOptions = response.data;
+                $scope.context.baseDownloadDir = response.data.dir || '';
+                // 确保路径末尾没有分隔符
+                $scope.context.baseDownloadDir = $scope.context.baseDownloadDir.replace(/[\/\\]$/, '');
+            }
+        });
 
         if (parameters.url) {
             try {
