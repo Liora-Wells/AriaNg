@@ -67,6 +67,12 @@
 
         var downloadByLinks = function (pauseOnAdded, responseCallback) {
             var options = angular.copy($scope.context.options);
+            
+            // 应用临时下载路径
+            if ($scope.context.downloadPath) {
+                options.dir = $scope.context.downloadPath;
+            }
+            
             var tasks = getDownloadTasksByLinks(options);
 
             saveDownloadPath(options);
@@ -102,6 +108,7 @@
             currentTab: 'links',
             taskType: 'urls',
             urls: '',
+            downloadPath: '',
             uploadFile: null,
             availableOptions: (function () {
                 var keys = aria2SettingService.getNewTaskOptionKeys();

@@ -384,10 +384,22 @@
     </div>
     <div id="task-filelist-contextmenu">
         <ul class="dropdown-menu" role="menu">
+            <li ng-if="isSingleFileSelected()">
+                <a tabindex="-1" class="pointer-cursor" title="{{'Rename' | translate}}" ng-click="renameSelectedFile()">
+                    <i class="fa fa-pencil fa-fw"></i>
+                    <span translate>Rename</span>
+                </a>
+            </li>
             <li ng-if="task.multiDir">
                 <a tabindex="-1" class="pointer-cursor" title="{{'Expand All' | translate}}" ng-click="collapseAllDirs(false)">
                     <i class="fa fa-plus fa-fw"></i>
                     <span translate>Expand All</span>
+                </a>
+            </li>
+            <li>
+                <a tabindex="-1" class="pointer-cursor" title="{{'Rename' | translate}}" ng-click="renameSelectedFile()">
+                    <i class="fa fa-pencil fa-fw"></i>
+                    <span translate>Rename</span>
                 </a>
             </li>
             <li ng-if="task.multiDir">

@@ -483,6 +483,13 @@
 
                 return invokeMulti(this.removeDownloadResult, contexts, context.callback);
             },
+
+            /**
+             * 移动或重命名任务中的文件
+             */
+            moveFile: function (context, returnContextOnly) {
+                return invoke(buildRequestContext('move', context, context.gid, context.fileIndex, context.newPath), !!returnContextOnly);
+            },
             getVersion: function (context, returnContextOnly) {
                 return invoke(buildRequestContext('getVersion', context), !!returnContextOnly);
             },

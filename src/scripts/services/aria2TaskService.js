@@ -989,6 +989,53 @@
             getCombinedPieces: function (bitField, pieceCount) {
                 return getCombinedPieces(bitField, pieceCount);
             },
+            /**
+             * 重命名任务中的文件
+             * 注意：aria2本身不直接支持文件重命名，此方法尝试通过moveFile操作实现类似功能
+             */
+            renameFile: function (gid, fileIndex, newFileName, callback, silent) {
+                if (!gid || fileIndex === undefined || !newFileName) {
+                    ariaNgLogService.warn('[aria2TaskService.renameFile] invalid parameters');
+                    if (callback) {
+                        callback({success: false, data: {message: 'Invalid parameters'}});
+                    }
+                    return;
+                }
+
+                // 首先获取任务信息以获取文件路径
+                return this.getTaskStatus(gid, function (response) {
+                    if (!response.success) {
+                        if (callback) {
+                            callback(response);
+                        }
+                        return;
+                    }
+
+                    var task = response.data;
+                    if (!task.files || task.files.length <= fileIndex) {
+                        ariaNgLogService.warn('[aria2TaskService.renameFile] file not found');
+                        if (callback) {
+                            callback({success: false, data: {message: 'File not found'}});
+                        }
+                        return;
+                    }
+
+                    var file = task.files[fileIndex];
+                    var oldPath = file.path;
+                    var dirPath = oldPath.substring(0, oldPath.lastIndexOf('/') + 1);
+                    var newPath = dirPath + newFileName;
+
+                    // 使用aria2的moveFile方法尝试重命名
+                    aria2RpcService.moveFile({
+                        gid: gid,
+                        fileIndex: fileIndex,
+                        newPath: newPath,
+                        silent: !!silent,
+                        callback: callback
+                    });
+                }, silent);
+            },
+
             estimateHealthPercentFromPeers: function (task, peers) {
                 if (!task || task.numPieces < 1 || peers.length < 1) {
                     ariaNgLogService.warn('[aria2TaskService.estimateHealthPercentFromPeers] tasks is null or numPieces < 1 or peers < 1', task);

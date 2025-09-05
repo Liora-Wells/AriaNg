@@ -38,22 +38,29 @@
             </ul>
 
             <div class="tab-content no-padding">
-                <div class="tab-pane" ng-class="{'active': context.currentTab === 'links'}">
-                    <div class="new-task-table" ng-if="context.taskType === 'urls'">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <p ng-bind="'format.task.new.download-links' | translate: {count: getValidUrlsCount()}">Download Links:</p>
-                                <div class="form-group has-feedback no-margin" ng-class="{ 'has-error' : newTaskForm.urls.$invalid && newTaskForm.urls.$dirty, 'has-success' : newTaskForm.urls.$valid && newTaskForm.urls.$dirty }">
-                                    <textarea name="urls" class="form-control" rows="10" autofocus="autofocus" ng-auto-focus ng-valid-urls
-                                              ng-model="context.urls" ng-required="true" ng-keydown="urlTextboxKeyDown($event)"
-                                              ng-placeholder="'Support multiple URLs, one URL per line.' | translate"></textarea>
-                                    <div class="form-control-icon" ng-if="newTaskForm.urls.$dirty">
-                                        <i class="fa form-control-feedback" ng-class="{'fa-check':newTaskForm.urls.$valid, 'fa-times':newTaskForm.urls.$invalid}"></i>
+                    <div class="tab-pane" ng-class="{'active': context.currentTab === 'links'}">
+                        <div class="new-task-table" ng-if="context.taskType === 'urls'">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <p ng-bind="'format.task.new.download-links' | translate: {count: getValidUrlsCount()}">Download Links:</p>
+                                    <div class="form-group has-feedback no-margin" ng-class="{ 'has-error' : newTaskForm.urls.$invalid && newTaskForm.urls.$dirty, 'has-success' : newTaskForm.urls.$valid && newTaskForm.urls.$dirty }">
+                                        <textarea name="urls" class="form-control" rows="10" autofocus="autofocus" ng-auto-focus ng-valid-urls
+                                                  ng-model="context.urls" ng-required="true" ng-keydown="urlTextboxKeyDown($event)"
+                                                  ng-placeholder="'Support multiple URLs, one URL per line.' | translate"></textarea>
+                                        <div class="form-control-icon" ng-if="newTaskForm.urls.$dirty">
+                                            <i class="fa form-control-feedback" ng-class="{'fa-check':newTaskForm.urls.$valid, 'fa-times':newTaskForm.urls.$invalid}"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            <!-- 临时下载位置选择 -->
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <p translate>Download Path (Optional)</p>
+                                    <input type="text" class="form-control" placeholder="Leave blank to use default path" ng-model="context.downloadPath" />
+                                </div>
+                            </div>
                         </div>
-                    </div>
                     <div class="new-task-table" ng-if="context.taskType === 'torrent' || context.taskType === 'metalink'">
                         <div class="row">
                             <div class="col-sm-12">

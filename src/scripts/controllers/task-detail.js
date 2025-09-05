@@ -369,6 +369,74 @@
             return true;
         };
 
+        /**
+         * 检查是否只选择了一个文件
+         */
+        $scope.isSingleFileSelected = function () {
+            if (!$scope.task || !$scope.task.files) {
+                return false;
+            }
+
+            var selectedCount = 0;
+            for (var i = 0; i < $scope.task.files.length; i++) {
+                var file = $scope.task.files[i];
+
+                if (!file.isDir && file.selected) {
+                    selectedCount++;
+                    if (selectedCount > 1) {
+                        return false;
+                    }
+                }
+            }
+
+            return selectedCount === 1;
+        };
+
+        /**
+         * 获取选中的单个文件
+         */
+        $scope.getSelectedSingleFile = function () {
+            if (!$scope.task || !$scope.task.files) {
+                return null;
+            }
+
+            for (var i = 0; i < $scope.task.files.length; i++) {
+                var file = $scope.task.files[i];
+
+                if (!file.isDir && file.selected) {
+                    return file;
+                }
+            }
+
+            return null;
+        };
+
+        /**
+         * 重命名选中的文件
+         */
+        $scope.renameSelectedFile = function () {
+            var file = $scope.getSelectedSingleFile();
+            if (!file) {
+                return;
+            }
+
+            var newFileName = prompt('Enter new file name:', file.fileName);
+            if (newFileName === null || newFileName.trim() === '') {
+                return;
+            }
+
+            // 这里需要调用aria2的RPC方法来重命名文件
+            // 注意：aria2本身不直接支持文件重命名，这里只是一个示例实现
+            aria2TaskService.renameFile($scope.task.gid, file.index, newFileName, function (response) {
+                if (response.success) {
+                    file.fileName = newFileName;
+                    refreshDownloadTask(false);
+                } else {
+                    alert('Failed to rename file: ' + response.data.message);
+                }
+            });
+        };
+
         $scope.selectFiles = function (type) {
             if (!$scope.task || !$scope.task.files) {
                 return;
