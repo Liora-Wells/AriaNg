@@ -341,7 +341,7 @@
             /**
              * 对文件名进行编码，处理特殊字符
              * @param {string} fileName - 文件名
-             * @returns {string} 编码后的文件名
+             * @returns {string} 编码后的文件名（中文不转义）
              */
             encodeFileName: function (fileName) {
                 if (!fileName) {
@@ -351,8 +351,8 @@
                 // 替换常见特殊字符为下划线
                 var encoded = fileName.replace(/[\/:*?"<>|]/g, '_');
                 
-                // 对结果进行URL编码，确保兼容性
-                return encodeURIComponent(encoded);
+                // 不对中文进行URL编码，仅处理特殊字符
+                return encoded;
             }
         };
     }]);
