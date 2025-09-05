@@ -1,0 +1,72 @@
+name: Build AriaNg Release
+
+# 触发条件：推送到 master 分支 或 创建标签时自动运行
+on:
+  push:
+    branches: [ master ]  # 推送到 master 分支时触发
+  release:
+    types: [ created ]    # 创建新 Release 标签时触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # 使用 GitHub 提供的 Ubuntu 环境
+
+    steps:
+      # 步骤1：拉取自己仓库的代码
+      - name: Checkout code
+        uses: actions/checkout@v4  # 拉取当前仓库（你的复刻仓库）的代码
+
+      # 步骤2：安装 Node.js（AriaNg 构建依赖）
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'  # 兼容 AriaNg 依赖的 Node 版本
+          cache: 'npm'        # 缓存 npm 依赖，加速后续构建
+
+      # 步骤3：安装项目依赖（包括 Gulp 构建工具）
+      - name: Install dependencies
+        run: npm install  # 安装 package.json 中定义的依赖
+
+      # 步骤4：构建标准版（多文件，适合 Web 部署）
+      - name: Build standard version
+        run: gulp clean build  # 执行构建命令，输出到 dist 目录
+
+      # 步骤5：构建全能版（单文件，适合本地直接打开）
+      - name: Build bundled version
+        run: gulp clean build-bundle  # 构建单文件版本
+
+      # 步骤6：打包构建结果为 ZIP（方便下载）
+      - name: Package build artifacts
+        run: |
+          # 打包标准版
+          cd dist
+          zip -r ../AriaNg-Standard-${{ github.sha::8 }}.zip .
+          cd ..
+          
+          # 重新构建全能版（避免文件冲突）
+          gulp clean build-bundle
+          
+          # 打包全能版
+          cd dist
+          zip -r ../AriaNg-Bundled-${{ github.sha::8 }}.zip .
+          cd ..
+
+      # 步骤7：上传构建产物为 Artifact（可在 Actions 页面下载）
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ariang-builds
+          path: |
+            AriaNg-Standard-*.zip
+            AriaNg-Bundled-*.zip
+
+      # 步骤8：若触发事件是创建 Release，自动上传产物到 Release 页面
+      - name: Upload to Releases
+        if: github.event_name == 'release'  # 仅在创建 Release 时执行
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            AriaNg-Standard-*.zip
+            AriaNg-Bundled-*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub 自动生成的令牌，用于发布
