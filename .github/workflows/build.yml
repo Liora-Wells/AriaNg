@@ -1,10 +1,10 @@
 name: Build AriaNg Release
 
-于:
+on:
   push:
-    分支: [ master ]
+    branches: [ master ]
   release:
-    types: [ 创建 ]
+    types: [ created ]
 
 jobs:
   build:
@@ -31,7 +31,7 @@ jobs:
 
       - name: Package build artifacts
         run: |
-          # 修正 SHA 截取语法：使用 substr 函数取前 8 位
+          # 正确的SHA截取语法（无中文字符，表达式格式正确）
           cd dist
           zip -r ../AriaNg-Standard-${{ github.sha | substr:0:8 }}.zip .
           cd ..
