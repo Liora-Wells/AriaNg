@@ -3,8 +3,6 @@ name: Build AriaNg Release
 on:
   push:
     branches: [ master ]
-    tags:
-      - 'v*'
   release:
     types: [ created ]
 
@@ -25,17 +23,29 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Get version from tag or package.json
+        id: get_version
+        run: |
+          # 从标签获取版本号（如果存在）
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            TAG_VERSION=${GITHUB_REF#refs/tags/}
+            # 移除可能的 'v' 前缀
+            TAG_VERSION=${TAG_VERSION#v}
+            echo "VERSION=$TAG_VERSION" >> $GITHUB_ENV
+          else
+            # 如果没有标签，则从 package.json 获取版本号
+            echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
+          fi
+          echo "Using version: ${{ env.VERSION }}"
+
       - name: Build standard version
         run: gulp clean build
 
       - name: Package standard version
         run: |
-          # 获取版本号
-          VERSION=$(node -p "require('./package.json').version")
-          
-          # 打包标准版
+          # 打包标准版，使用确定的版本号命名
           cd dist
-          zip -r ../AriaNg-$VERSION.zip .
+          zip -r ../AriaNg-${{ env.VERSION }}.zip .
           cd ..
 
       - name: Build bundled version
@@ -43,23 +53,17 @@ jobs:
 
       - name: Package bundled version
         run: |
-          # 获取版本号
-          VERSION=$(node -p "require('./package.json').version")
-          
-          # 打包全能版（AllInOne）
+          # 打包全能版（AllInOne），使用确定的版本号命名
           cd dist
-          mv index.html AriaNg-$VERSION-AllInOne.html
-          zip -r ../AriaNg-$VERSION-AllInOne.zip AriaNg-$VERSION-AllInOne.html
+          mv index.html AriaNg-${{ env.VERSION }}-AllInOne.html
+          zip -r ../AriaNg-${{ env.VERSION }}-AllInOne.zip AriaNg-${{ env.VERSION }}-AllInOne.html
           cd ..
 
       - name: Package source code
         run: |
-          # 获取版本号
-          VERSION=$(node -p "require('./package.json').version")
-          
-          # 创建源代码包
+          # 创建源代码包，使用确定的版本号命名
           cd ..
-          zip -r AriaNg/AriaNg-$VERSION-Source.zip AriaNg -x "AriaNg/.git/*" "AriaNg/dist/*" "AriaNg/.tmp/*" "AriaNg/*.zip"
+          zip -r AriaNg/AriaNg-${{ env.VERSION }}-Source.zip AriaNg -x "AriaNg/.git/*" "AriaNg/dist/*" "AriaNg/.tmp/*" "AriaNg/*.zip"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
