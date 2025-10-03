@@ -4,7 +4,7 @@ on:
   push:
     branches: [ master ]
   release:
-    types: [ created ]
+    types: [ 创建 ]
 
 jobs:
   build:
@@ -26,41 +26,51 @@ jobs:
       - name: Build standard version
         run: gulp clean build
 
-      - name: Build bundled version
-        run: gulp clean build-bundle
-
-      - name: Package build artifacts
+      - name: Package standard version
         run: |
-          # 在shell中通过cut截取SHA前8位，避免YAML表达式语法问题
-          SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-8)
+          # 获取版本号
+          VERSION=$(node -p "require('./package.json').version")
           
           # 打包标准版
           cd dist
-          zip -r ../AriaNg-Standard-$SHORT_SHA.zip .
+          zip -r ../AriaNg-$VERSION.zip .
           cd ..
+
+      - name: Build bundled version
+        run: gulp clean build-bundle
+
+      - name: Package bundled version
+        run: |
+          # 获取版本号
+          VERSION=$(node -p "require('./package.json').version")
           
-          # 重新构建全能版
-          gulp clean build-bundle
-          
-          # 打包全能版
+          # 打包全能版（AllInOne）
           cd dist
-          zip -r ../AriaNg-Bundled-$SHORT_SHA.zip .
+          mv index.html AriaNg-$VERSION-AllInOne.html
+          zip -r ../AriaNg-$VERSION-AllInOne.zip AriaNg-$VERSION-AllInOne.html
           cd ..
+
+      - name: Package source code
+        run: |
+          # 获取版本号
+          VERSION=$(node -p "require('./package.json').version")
+          
+          # 创建源代码包
+          cd ..
+          zip -r AriaNg/AriaNg-$VERSION-Source.zip AriaNg -x "AriaNg/.git/*" "AriaNg/dist/*" "AriaNg/.tmp/*" "AriaNg/*.zip"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ariang-builds
           path: |
-            AriaNg-Standard-*.zip
-            AriaNg-Bundled-*.zip
+            AriaNg-*.zip
 
       - name: Upload to Releases
         if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            AriaNg-Standard-*.zip
-            AriaNg-Bundled-*.zip
+            AriaNg-*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
