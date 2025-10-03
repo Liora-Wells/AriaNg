@@ -3,8 +3,10 @@ name: Build AriaNg Release
 on:
   push:
     branches: [ master ]
+    tags:
+      - 'v*'
   release:
-    types: [ 创建 ]
+    types: [ created ]
 
 jobs:
   build:
