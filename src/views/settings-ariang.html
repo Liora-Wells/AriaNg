@@ -382,6 +382,15 @@
                             </select>
                         </div>
                     </div>
+                    <div class="row" ng-if="context.isInsecureProtocolDisabled">
+                        <div class="col-sm-12">
+                            <div class="callout callout-warning" style="margin: 5px 15px 15px 15px; padding: 10px 15px; font-size: 13px;">
+                                <p style="margin-bottom: 5px;"><i class="fa fa-exclamation-triangle" style="margin-right: 5px;"></i><span translate>HTTPS mode cannot connect to local HTTP/WebSocket aria2 due to browser security policy.</span></p>
+                                <p style="margin-bottom: 5px;"><strong><span translate>Recommended:</span></strong> <span translate>Download AriaNg and open it locally in your browser (supports HTTP/WS directly, no deployment needed).</span></p>
+                                <p style="margin-bottom: 0;"><strong><span translate>Or:</span></strong> <span translate>If you run aria2 directly, add --rpc-secure flag to enable HTTPS/WSS support.</span></p>
+                            </div>
+                        </div>
+                    </div>
                     <div class="row" ng-if="setting.protocol === 'http' || setting.protocol === 'https'">
                         <div class="setting-key setting-key-without-desc col-sm-4">
                             <span translate>Aria2 RPC Http Request Method</span>
