@@ -181,10 +181,19 @@
             };
         };
 
+        var cancelPendingReconnect = function () {
+            if (pendingReconnect) {
+                $timeout.cancel(pendingReconnect);
+                pendingReconnect = null;
+            }
+        };
+
         var reconnect = function (context) {
             if (!context || !socketClient) {
                 return;
             }
+
+            cancelPendingReconnect();
 
             for (var uniqueId in sendIdStates) {
                 if (!sendIdStates.hasOwnProperty(uniqueId)) {
@@ -293,6 +302,16 @@
                 }
 
                 callbacks.push(callback);
+            },
+            cleanup: function () {
+                cancelPendingReconnect();
+
+                if (socketClient) {
+                    socketClient.close();
+                    socketClient = null;
+                }
+
+                sendIdStates = {};
             }
         };
     }]);

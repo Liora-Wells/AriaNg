@@ -68,7 +68,7 @@
         var initCheck = function () {
             var browserFeatures = ariaNgSettingService.getBrowserFeatures();
 
-            if (!browserFeatures.localStroage) {
+            if (!browserFeatures.localStorage) {
                 ariaNgLogService.warn('[root.initCheck] LocalStorage is not supported!');
             }
 

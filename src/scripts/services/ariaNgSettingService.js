@@ -3,15 +3,15 @@
 
     angular.module('ariaNg').factory('ariaNgSettingService', ['$window', '$location', '$filter', 'ariaNgConstants', 'ariaNgDefaultOptions', 'ariaNgLanguages', 'ariaNgCommonService', 'ariaNgLogService', 'ariaNgStorageService', function ($window, $location, $filter, ariaNgConstants, ariaNgDefaultOptions, ariaNgLanguages, ariaNgCommonService, ariaNgLogService, ariaNgStorageService) {
         var browserFeatures = (function () {
-            var supportLocalStroage = ariaNgStorageService.isLocalStorageSupported();
+            var supportLocalStorage = ariaNgStorageService.isLocalStorageSupported();
             var supportCookies = ariaNgStorageService.isCookiesSupported();
 
             return {
-                localStroage: supportLocalStroage,
+                localStorage: supportLocalStorage,
                 cookies: supportCookies
             };
         })();
-        var browserSupportStorage = browserFeatures.localStroage || browserFeatures.cookies;
+        var browserSupportStorage = browserFeatures.localStorage || browserFeatures.cookies;
         var browserSupportMatchMedia = !!$window.matchMedia;
         var browserSupportDarkMode = browserSupportMatchMedia
             && $window.matchMedia('(prefers-color-scheme: dark)')
