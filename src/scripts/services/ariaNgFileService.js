@@ -23,7 +23,7 @@
                     continue;
                 }
 
-                extension = extension.replace('.', '\\.');
+                extension = extension.replace(/\./g, '\\.');
                 extension = extension + '$';
 
                 extensions.push(new RegExp(extension));
@@ -96,7 +96,7 @@
                         if (!checkFileExtension(fileName, allowedExtensions)) {
                             if (thisOptions.errorCallback) {
                                 if (thisOptions.scope) {
-                                    thisOptions.scope.$apply(function () {
+                                    thisOptions.scope.$evalAsync(function () {
                                         thisOptions.errorCallback('The selected file type is invalid!');
                                     });
                                 } else {
@@ -126,7 +126,7 @@
 
                             if (thisOptions.successCallback) {
                                 if (thisOptions.scope) {
-                                    thisOptions.scope.$apply(function () {
+                                    thisOptions.scope.$evalAsync(function () {
                                         thisOptions.successCallback(result);
                                     });
                                 } else {
@@ -138,7 +138,7 @@
                         reader.onerror = function () {
                             if (thisOptions.errorCallback) {
                                 if (thisOptions.scope) {
-                                    thisOptions.scope.$apply(function () {
+                                    thisOptions.scope.$evalAsync(function () {
                                         thisOptions.errorCallback('Failed to load file!');
                                     });
                                 } else {
