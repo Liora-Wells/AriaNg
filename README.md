@@ -1,12 +1,52 @@
+[简体中文](README_CN.md)
+
 # AriaNg
+
 [![License](https://img.shields.io/github/license/mayswind/AriaNg.svg?style=flat)](https://github.com/mayswind/AriaNg/blob/master/LICENSE)
-[![Lastest Build](https://img.shields.io/circleci/project/github/mayswind/AriaNg.svg?style=flat)](https://circleci.com/gh/mayswind/AriaNg/tree/master)
-[![Lastest Release](https://img.shields.io/github/release/mayswind/AriaNg.svg?style=flat)](https://github.com/mayswind/AriaNg/releases)
+
+AriaNg is a modern web frontend making [aria2](https://github.com/aria2/aria2) easier to use. This is an enhanced fork with bug fixes, security updates, and new features.
+
+## What's Improved
+
+### New Features
+
+- **Custom Download Path & Filename** — Specify download directory and rename file when creating a new task
+- **HTTPS Deployment Guide** — When AriaNg is accessed via HTTPS (e.g. through Cloudflare), a visible warning banner appears in RPC settings explaining why HTTP/WS connections are blocked and how to resolve it, with solutions tailored for both third-party aria2 client users and direct aria2 users
+
+### Bug Fixes
+
+- **HTTP Custom Header Parsing** — Fixed a bug where headers containing colons in their values (e.g. `Date: Tue, 01 Jan 2023 00:00:00 GMT`) were silently skipped. Now correctly splits on the first colon only
+- **File Extension Filter Regex** — Fixed regex construction for multi-dot extensions like `.tar.gz`, which previously failed to match
+- **WebSocket Reconnection Memory Leak** — Added cleanup for pending reconnection timers when a new reconnect is triggered, preventing duplicate timeouts and memory leaks
+- **LocalStorage Typo** — Corrected `localStroage` → `localStorage` (4 occurrences) that could cause confusion in future maintenance
+
+### Dependency Security Updates
+
+| Package | Before | After |
+|---------|--------|-------|
+| Angular | 1.6.10 | 1.8.3 |
+| jQuery | 3.4.1 | 3.7.1 |
+
+Angular 1.6.x has known security vulnerabilities; 1.8.3 is the final stable release. jQuery 3.7.1 includes multiple security patches.
+
+### Code Quality
+
+- Replaced `$scope.$apply` with `$scope.$evalAsync` in FileReader callbacks to prevent potential `$digest already in progress` errors
+- All `for...in` loops already have `hasOwnProperty` protection (verified)
+
+### Localization Improvements
+
+- Added missing Chinese translations
+- Improved cross-platform filename encoding handling
+
+---
 
 ## Introduction
-AriaNg is a modern web frontend making [aria2](https://github.com/aria2/aria2) easier to use. AriaNg is written in pure html & javascript, thus it does not need any compilers or runtime environment. You can just put AriaNg in your web server and open it in your browser. AriaNg uses responsive layout, and supports any desktop or mobile devices.
+
+AriaNg is written in pure html & javascript, thus it does not need any compilers or runtime environment. You can just put AriaNg in your web server and open it in your browser. AriaNg uses responsive layout, and supports any desktop or mobile devices.
 
 ## Features
+
 1. Pure Html & Javascript, no runtime required
 2. Responsive design, supporting desktop and mobile devices
 3. User-friendly interface
@@ -28,20 +68,24 @@ AriaNg is a modern web frontend making [aria2](https://github.com/aria2/aria2) e
 10. Less bandwidth usage, only requesting incremental data
 
 ## Screenshots
+
 #### Desktop
 ![AriaNg](https://raw.githubusercontent.com/mayswind/AriaNg-WebSite/master/screenshots/desktop.png)
 #### Mobile Device
 ![AriaNg](https://raw.githubusercontent.com/mayswind/AriaNg-WebSite/master/screenshots/mobile.png)
 
 ## Installation
-AriaNg now provides three versions, standard version, all-in-one version and [AriaNg Native](https://github.com/mayswind/AriaNg-Native). Standard version is suitable for deployment in the web server, and provides on-demand loading. All-In-One version is suitable for local using, and you can download it and just open the only html file in browser. [AriaNg Native](https://github.com/mayswind/AriaNg-Native) is also suitable for local using, and is no need for browser. 
+
+AriaNg now provides three versions, standard version, all-in-one version and [AriaNg Native](https://github.com/mayswind/AriaNg-Native). Standard version is suitable for deployment in the web server, and provides on-demand loading. All-In-One version is suitable for local using, and you can download it and just open the only html file in browser. [AriaNg Native](https://github.com/mayswind/AriaNg-Native) is also suitable for local using, and is no need for browser.
 
 #### Prebuilt release
+
 Latest Release: [https://github.com/mayswind/AriaNg/releases](https://github.com/mayswind/AriaNg/releases)
 
 Latest Daily Build (Standard Version): [https://github.com/mayswind/AriaNg-DailyBuild/archive/master.zip](https://github.com/mayswind/AriaNg-DailyBuild/archive/master.zip)
 
 #### Building from source
+
 Make sure you have [Node.js](https://nodejs.org/), [NPM](https://www.npmjs.com/) and [Gulp](https://gulpjs.com/) installed. Then download the source code, and follow these steps.
 
 ##### Standard Version
@@ -57,6 +101,7 @@ Make sure you have [Node.js](https://nodejs.org/), [NPM](https://www.npmjs.com/)
 The builds will be placed in the dist directory.
 
 #### Usage Notes
+
 Since AriaNg standard version loads language resources asynchronously, you may not open index.html directly on the local file system to run AriaNg. It is recommended that you can use the all-in-one version or deploy AriaNg in a web container or download [AriaNg Native](https://github.com/mayswind/AriaNg-Native) that does not require a browser to run.
 
 ## Translating
@@ -84,14 +129,18 @@ Currently available translations:
 Don't see your language? Help us add it!
 
 ## Documents
+
 1. [English](http://ariang.mayswind.net)
 2. [Simplified Chinese (简体中文)](http://ariang.mayswind.net/zh_Hans)
 
 ## Demo
+
 Please visit [http://ariang.mayswind.net/latest](http://ariang.mayswind.net/latest)
 
 ## Third Party Extensions
+
 There are some third-party applications based on AriaNg, so you can use AriaNg in more scenarios or devices. Please visit [Third Party Extensions](http://ariang.mayswind.net/3rd-extensions.html) for more information.
 
 ## License
+
 [MIT](https://github.com/mayswind/AriaNg/blob/master/LICENSE)
